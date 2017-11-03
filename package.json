@@ -1,8 +1,8 @@
 {
   "name": "my-nconf",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "load configs hiarchy for node services",
-  "main": "config.js",
+  "main": "index.js",
   "scripts": {
     "build": "tsc",
     "clean": "rm *.js *.map",
