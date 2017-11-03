@@ -9,10 +9,24 @@
     "test": "tsc && NODE_ENV=production node ./example"
   },
   "keywords": [
-    "config"
+    "config",
+    "nodejs",
+    "micro-services"
   ],
-  "author": "Zen",
-  "license": "ISC",
+  "author": {
+    "name": "Zen",
+    "email": "nggiang12@gmail.com",
+    "url": "https://github.com/giang12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/giang12/node-config.git"
+  },
+  "bugs": {
+    "url": "https://github.com/giang12/node-config/issues"
+  },
+  "homepage": "https://github.com/giang12/node-config#readme",
+  "license": "MIT",
   "devDependencies": {
     "@types/lodash": "^4.14.80",
     "@types/nconf": "0.0.34",
