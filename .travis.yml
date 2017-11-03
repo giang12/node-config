@@ -8,7 +8,6 @@ deploy:
     repo: giang12/node-config
 node_js:
 - node
-- iojs
 - lts/*
 - '8'
 - '7'
