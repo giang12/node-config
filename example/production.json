@@ -1,0 +1,9 @@
+{
+	"port": 80,
+	"transporter": {
+        "nats": {
+            "type": "nats",
+            "url": "nats://localhost:4222"
+        }
+    }
+}

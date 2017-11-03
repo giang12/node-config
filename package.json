@@ -1,0 +1,26 @@
+{
+  "name": "node-config",
+  "version": "1.0.0",
+  "description": "load configs hiarchy for node services",
+  "main": "config.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm *.js *.map",
+    "test": "tsc && NODE_ENV=production node ./example"
+  },
+  "keywords": [
+    "config"
+  ],
+  "author": "Zen",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/lodash": "^4.14.80",
+    "@types/nconf": "0.0.34",
+    "@types/node": "^8.0.47"
+  },
+  "dependencies": {
+    "fs-extra": "^4.0.2",
+    "lodash": "^4.17.4",
+    "nconf": "^0.8.5"
+  }
+}
