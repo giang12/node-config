@@ -1,5 +1,5 @@
 {
-  "name": "node-config",
+  "name": "my-nconf",
   "version": "1.0.0",
   "description": "load configs hiarchy for node services",
   "main": "config.js",
