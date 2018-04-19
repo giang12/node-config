@@ -25,7 +25,12 @@ function loadConfig(confDir, opts) {
         ["project root", PROJECT_ROOT]
     ];
     if (confDir)
-        lookuppaths.push(["custom override 1", confDir]);
+        lookuppaths.push(["jiggy custom override", confDir]);
+    if (process.env.NODE_CONFIG_DIR)
+        lookuppaths.push([
+            "NODE_CONFIG_DIR custom override",
+            process.env.NODE_CONFIG_DIR
+        ]);
     lookuppaths.forEach(lp => {
         config.util.extendDeep(config, config.util.loadFileConfigs(lp[1]));
     });

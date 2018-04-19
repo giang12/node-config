@@ -39,7 +39,7 @@ export function loadConfig(confDir?: string, opts?: LoadConfOpts) {
 	let PROJECT_ROOT = process.cwd(); //of where node is invoked
 
 	// order matters, otherwise this could be an object
-	// !path @ index 0 has LOWEST priority
+	// !path @ index 0 has LOWEST priority, latest rule has Highest
 	let lookuppaths = [
 		["etc", "/etc/config/"], // etc/config
 		[
@@ -60,9 +60,16 @@ export function loadConfig(confDir?: string, opts?: LoadConfOpts) {
 		["project .config", path.join(PROJECT_ROOT, ".config")], // ./.config/
 		["project root", PROJECT_ROOT] // ./
 	];
+	/** custom rules */
+	if (confDir) lookuppaths.push(["jiggy custom override", confDir]);
 
-	if (confDir) lookuppaths.push(["custom override 1", confDir]);
-
+	if (process.env.NODE_CONFIG_DIR)
+		lookuppaths.push([
+			"NODE_CONFIG_DIR custom override",
+			process.env.NODE_CONFIG_DIR
+		]);
+	//	end custom rules
+	//
 	// loop over paths and load them in
 	lookuppaths.forEach(lp => {
 		config.util.extendDeep(config, config.util.loadFileConfigs(lp[1]));
