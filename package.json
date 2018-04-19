@@ -6,13 +6,9 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm *.js *.map",
-    "test": "tsc && NODE_ENV=production node ./example"
+    "test": "tsc && NODE_ENV=production node ./test.js"
   },
-  "keywords": [
-    "config",
-    "nodejs",
-    "micro-services"
-  ],
+  "keywords": ["config", "nodejs", "micro-services"],
   "author": {
     "name": "Zen",
     "email": "nggiang12@gmail.com",
@@ -29,12 +25,12 @@
   "license": "MIT",
   "devDependencies": {
     "@types/lodash": "^4.14.80",
-    "@types/nconf": "0.0.34",
+    "@types/config": "0.0.34",
     "@types/node": "^8.0.47"
   },
   "dependencies": {
-    "fs-extra": "^4.0.2",
-    "lodash": "^4.17.4",
-    "nconf": "^0.8.5"
+    "caller-id": "^0.1.0",
+    "config": "^1.30.0",
+    "lodash": "^4.17.4"
   }
 }

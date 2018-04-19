@@ -1,76 +1,54 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const nconf = require('nconf'), path = require('path'), fs = require('fs-extra'), Config = require('./index').Config;
+const path = require("path"), callerId = require("caller-id");
 const lodash_1 = require("lodash");
-const NESTED_OBJECT_SEPARATOR = '__';
-const DEFAULT_CONFIG_FILE_NAME = 'default';
 function loadConfig(confDir, opts) {
     let opt = lodash_1.defaults({}, opts, {
-        verbose: false
+        verbose: false,
+        strict: false
     });
-    let startup = nconf
-        .argv()
-        .env({ separator: NESTED_OBJECT_SEPARATOR });
-    let environment = (startup.get('NODE_ENV') || 'development').toLowerCase();
-    let config_path = startup.get('config_path');
-    startup.remove('env');
-    startup.remove('argv');
-    startup.remove('defaults');
-    startup = null;
-    let conf = new Config()
-        .overrides({})
-        .argv()
-        .env({ separator: NESTED_OBJECT_SEPARATOR });
-    if (config_path)
-        _readConf(conf, path.resolve(config_path));
-    let PROJECT_ROOT = confDir
-        || process.cwd();
-    var lookuppaths = [
-        ['project', PROJECT_ROOT],
-        ['.home', path.join((process.env.USERPROFILE || process.env.HOME || PROJECT_ROOT), '.config')],
-        ['home', path.join((process.env.USERPROFILE || process.env.HOME || PROJECT_ROOT), 'config')],
-        ['etc', "/etc/"]
+    let caller = callerId.getData(loadConfig);
+    let config = _loadConfig(path.dirname(caller.filePath), opt.strict);
+    let PROJECT_ROOT = process.cwd();
+    let lookuppaths = [
+        ["etc", "/etc/config/"],
+        [
+            "home",
+            path.join(process.env.USERPROFILE || process.env.HOME || PROJECT_ROOT, "config")
+        ],
+        [
+            ".home",
+            path.join(process.env.USERPROFILE || process.env.HOME || PROJECT_ROOT, ".config")
+        ],
+        ["project config", path.join(PROJECT_ROOT, "config")],
+        ["project .config", path.join(PROJECT_ROOT, ".config")],
+        ["project root", PROJECT_ROOT]
     ];
-    let defaultsConfig = {};
-    lookuppaths.forEach(function (lp) {
-        let envFile = path.resolve(lp[1], `${environment}.json`);
-        let defaultFile = path.resolve(lp[1], `${DEFAULT_CONFIG_FILE_NAME}.json`);
-        let _defaultConf;
-        conf = conf.file(lp[0], envFile);
-        try {
-            _defaultConf = require(defaultFile);
-            defaultsConfig = lodash_1.merge(defaultsConfig, _defaultConf);
-        }
-        catch (e) {
-            if (opt.verbose)
-                console.log('unable to load %s: %s', defaultFile, e.message);
-        }
+    if (confDir)
+        lookuppaths.push(["custom override 1", confDir]);
+    lookuppaths.forEach(lp => {
+        config.util.extendDeep(config, config.util.loadFileConfigs(lp[1]));
     });
-    conf.defaults(defaultsConfig);
     if (opt.verbose)
-        console.log(conf.get());
-    return conf;
+        console.log(config);
+    return config;
 }
 exports.loadConfig = loadConfig;
-function _readConf(conf, configFile) {
-    if (fs.existsSync(configFile)) {
-        if (fs.statSync(configFile).isDirectory()) {
-            fs
-                .readdirSync(configFile)
-                .filter(function (file) {
-                return (/\.json$/).test(file);
-            })
-                .sort(function (file_a, file_b) {
-                return file_a < file_b;
-            })
-                .forEach(function (file) {
-                var filepath = path.normalize(path.join(configFile, file));
-                conf = conf.file(file, filepath);
-            });
-        }
-        else {
-            conf = conf.file(configFile);
-        }
+function _loadConfig(configFolder, strict = false) {
+    process.env.SUPPRESS_NO_CONFIG_WARNING = "y";
+    delete require.cache[require.resolve("config")];
+    let originalCErr;
+    if (!strict) {
+        originalCErr = console.error;
+        console.error = function () { };
     }
+    let oldConfigFolder = process.env.NODE_CONFIG_DIR;
+    process.env.NODE_CONFIG_DIR = configFolder;
+    let config = require("config");
+    process.env.NODE_CONFIG_DIR = oldConfigFolder;
+    if (!strict) {
+        console.error = originalCErr;
+    }
+    return config;
 }
 //# sourceMappingURL=loadConfig.js.map
