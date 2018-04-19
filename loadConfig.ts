@@ -72,7 +72,7 @@ export function loadConfig(confDir?: string, opts?: LoadConfOpts) {
 	return config;
 }
 
-function _loadConfig(configFolder, strict = false) {
+function _loadConfig(configFolder, strict?) {
 	process.env.SUPPRESS_NO_CONFIG_WARNING = "y";
 	delete require.cache[require.resolve("config")]; //forced isolation..
 	let originalCErr;

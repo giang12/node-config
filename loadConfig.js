@@ -34,7 +34,7 @@ function loadConfig(confDir, opts) {
     return config;
 }
 exports.loadConfig = loadConfig;
-function _loadConfig(configFolder, strict = false) {
+function _loadConfig(configFolder, strict) {
     process.env.SUPPRESS_NO_CONFIG_WARNING = "y";
     delete require.cache[require.resolve("config")];
     let originalCErr;
