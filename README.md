@@ -47,9 +47,10 @@ then it will attempt to read and `extendDeep` appropriate config files found at 
 let lookuppaths = [
 	 {callsite}/config
 	,{callsite}/.config
+	,{project dir}
 	,{project dir}/config/
 	,{project dir}/.config/
-	,{cwd}./
+	,{cwd}
 	,{cwd}/config/
 	,{cwd}/.config/
 	,/Users/{username}/config/
