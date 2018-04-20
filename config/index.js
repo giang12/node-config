@@ -1,3 +1,3 @@
-const {loadConfig} = require("../loadConfig");
-let conf = loadConfig();
-module.exports = conf
+var loadConfig = require("../loadConfig").loadConfig;
+var conf = loadConfig();
+module.exports = conf;
