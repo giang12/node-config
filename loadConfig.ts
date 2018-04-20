@@ -1,7 +1,8 @@
-const path = require("path"),
-	callerId = require("caller-id");
+const path = require('path'),
+	callerId = require('caller-id');
+const pkgDir = require('pkg-dir');
 
-import { defaults } from "lodash";
+import { defaults } from 'lodash';
 
 /**
  * Load Config Hierarchy
@@ -30,42 +31,48 @@ export function loadConfig(confDir?: string, opts?: LoadConfOpts) {
 		verbose: false,
 		strict: false
 	});
-	let caller = callerId.getData(loadConfig); //get ref to caller
 
+	//relevant dir paths
+	let caller = callerId.getData(loadConfig),
+		callerDir = path.dirname(caller.filePath), //get ref to caller
+		projectRoot = pkgDir.sync(callerDir),
+		cwd = process.cwd(); //of where node is invoked
+	
+	if(opt.verbose){
+		console.log(caller);
+		console.log(projectRoot);
+	}
 	//1. read in conf defined @ caller directory as default
-	let config = _loadConfig(path.dirname(caller.filePath), opt.strict);
+	let config = _loadConfig(callerDir, opt.strict);
 
 	//2. look up environment & 3. system config
-	let PROJECT_ROOT = process.cwd(); //of where node is invoked
-
 	// order matters, otherwise this could be an object
 	// !path @ index 0 has LOWEST priority, latest rule has Highest
 	let lookuppaths = [
-		["etc", "/etc/config/"], // etc/config
+		['caller config', path.join(callerDir, 'config')], // {callsite}/config
+		['caller .config', path.join(callerDir, '.config')], // {callsite}/.config
+		['project root', projectRoot], // ./
+		['project config', path.join(projectRoot, 'config')], // ./config/
+		['project .config', path.join(projectRoot, '.config')], // ./.config/
+		['cwd root', cwd], // ./
+		['cwd config', path.join(cwd, 'config')], // ./config/
+		['cwd .config', path.join(cwd, '.config')], // ./.config/
 		[
-			"home",
-			path.join(
-				process.env.USERPROFILE || process.env.HOME || PROJECT_ROOT,
-				"config"
-			)
+			'home',
+			path.join(process.env.USERPROFILE || process.env.HOME, 'config')
 		], // /Users/{username}/config/
 		[
-			".home",
-			path.join(
-				process.env.USERPROFILE || process.env.HOME || PROJECT_ROOT,
-				".config"
-			)
+			'.home',
+			path.join(process.env.USERPROFILE || process.env.HOME, '.config')
 		], // /Users/{username}/.config/
-		["project config", path.join(PROJECT_ROOT, "config")], // ./config/
-		["project .config", path.join(PROJECT_ROOT, ".config")], // ./.config/
-		["project root", PROJECT_ROOT] // ./
+		['etc', '/etc/config/'] // etc/config
 	];
 	/** custom rules */
-	if (confDir) lookuppaths.push(["jiggy custom override", confDir]);
+	if (confDir) lookuppaths.push(['jiggy custom override', confDir]);
 
 	if (process.env.NODE_CONFIG_DIR)
 		lookuppaths.push([
-			"NODE_CONFIG_DIR custom override",
+			'NODE_CONFIG_DIR custom override',
 			process.env.NODE_CONFIG_DIR
 		]);
 	//	end custom rules
@@ -80,8 +87,8 @@ export function loadConfig(confDir?: string, opts?: LoadConfOpts) {
 }
 
 function _loadConfig(configFolder, strict?) {
-	process.env.SUPPRESS_NO_CONFIG_WARNING = "y";
-	delete require.cache[require.resolve("config")]; //forced isolation..
+	process.env.SUPPRESS_NO_CONFIG_WARNING = 'y';
+	delete require.cache[require.resolve('config')]; //forced isolation..
 	let originalCErr;
 	if (!strict) {
 		originalCErr = console.error;
@@ -89,7 +96,7 @@ function _loadConfig(configFolder, strict?) {
 	}
 	let oldConfigFolder = process.env.NODE_CONFIG_DIR;
 	process.env.NODE_CONFIG_DIR = configFolder;
-	let config = require("config");
+	let config = require('config');
 	process.env.NODE_CONFIG_DIR = oldConfigFolder;
 	if (!strict) {
 		console.error = originalCErr;
@@ -97,3 +104,5 @@ function _loadConfig(configFolder, strict?) {
 
 	return config;
 }
+
+function _findProjectRoot(path) {}
