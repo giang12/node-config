@@ -26,10 +26,11 @@ Use `config.has()` to test if a configuration value is defined.
 
 Use configs in your code:
 
-```
+```js
+//./app/server.js
 import { loadConfig } from 'my-nconf';
-//...
-var config = loadConfig(__dirname);
+
+var config = loadConfig();
 var dbConfig = config.get('Customer.dbConfig');
 db.connect(dbConfig, ...);
 
@@ -39,9 +40,29 @@ if (config.has('optionalFeature.detail')) {
 }
 ```
 
+By default `loadConfig` will load in config files found at `callsite` directory (e.g `./app/`)
+then it will attempt to read and `extendDeep` appropriate config files found at `lookuppaths` in order
+
+```
+let lookuppaths = [
+	 {callsite}/config
+	,{callsite}/.config
+	,{project dir}/config/
+	,{project dir}/.config/
+	,{cwd}./
+	,{cwd}/config/
+	,{cwd}/.config/
+	,/Users/{username}/config/
+	,/Users/{username}/.config/
+	,/etc/config
+	,confDir //e.g loadConfig(confDir)
+	,process.env.NODE_CONFIG_DIR
+];
+```
+
 ## Start your app server:
 
 ```shell
 $ export NODE_ENV=production
-$ node my-app.js
+$ node ./app/server.js
 ```
