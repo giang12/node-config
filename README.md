@@ -56,7 +56,10 @@ let lookuppaths = [
 	,/Users/{username}/config/
 	,/Users/{username}/.config/
 	,/etc/config
-	,confDir //e.g loadConfig(confDir)
+	,/etc/.config
+	,/config
+	,/.config
+	,confDirs //e.g loadConfig(confDir) loadConfig([confDir1, dir2, dir3], opts)
 	,process.env.NODE_CONFIG_DIR
 ];
 ```
