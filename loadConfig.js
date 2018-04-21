@@ -3,42 +3,47 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path"), callerId = require("caller-id");
 const pkgDir = require("pkg-dir");
 const lodash_1 = require("lodash");
-function loadConfig(confDir, opts) {
+function loadConfig(confDirs, opts) {
     let opt = lodash_1.defaults({}, opts, {
-        verbose: false,
+        verbose: true,
         strict: false
     });
-    const caller = callerId.getData(loadConfig), CALLER_DIR = path.dirname(caller.filePath), PROJ_ROOT = pkgDir.sync(CALLER_DIR), CWD = process.cwd(), HOME = process.env.USERPROFILE || process.env.HOME;
-    if (opt.verbose) {
-        console.log(caller);
-        console.log(PROJ_ROOT);
-    }
+    confDirs = Array.isArray(confDirs)
+        ? confDirs
+        : typeof confDirs === "string" ? [confDirs] : [];
+    const log = opt.verbose ? console.log : function () { };
+    const caller = callerId.getData(loadConfig), CALLER_DIR = path.dirname(caller.filePath), PROJ_ROOT = pkgDir.sync(CALLER_DIR), CWD = process.cwd(), HOME = process.env.USERPROFILE || process.env.HOME, ROOT = "/", NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR;
+    log(caller);
+    log(PROJ_ROOT);
     let config = _loadConfig(CALLER_DIR, opt.strict);
     let lookuppaths = [
         ["caller config", path.join(CALLER_DIR, "config")],
         ["caller .config", path.join(CALLER_DIR, ".config")],
-        ["project", PROJ_ROOT],
+        ["project", path.resolve(PROJ_ROOT)],
         ["project config", path.join(PROJ_ROOT, "config")],
         ["project .config", path.join(PROJ_ROOT, ".config")],
-        ["cwd", CWD],
+        ["cwd", path.resolve(CWD)],
         ["cwd config", path.join(CWD, "config")],
         ["cwd .config", path.join(CWD, ".config")],
         ["home", path.join(HOME, "config")],
         [".home", path.join(HOME, ".config")],
-        ["etc", "/etc/config/"]
+        ["etc", path.resolve("/etc/config/")],
+        [".etc", path.resolve("/etc/.config/")],
+        ["root", path.join(ROOT, "config")],
+        [".root", path.join(ROOT, ".config")]
     ];
-    if (confDir)
-        lookuppaths.push(["jiggy custom override", confDir]);
-    if (process.env.NODE_CONFIG_DIR)
-        lookuppaths.push([
-            "NODE_CONFIG_DIR custom override",
-            process.env.NODE_CONFIG_DIR
-        ]);
-    lookuppaths.forEach(lp => {
-        config.util.extendDeep(config, config.util.loadFileConfigs(lp[1]));
+    confDirs.forEach((dir, idx) => {
+        lookuppaths.push(["jiggy custom override " + idx, dir]);
     });
-    if (opt.verbose)
-        console.log(config);
+    if (NODE_CONFIG_DIR && NODE_CONFIG_DIR != "undefined") {
+        lookuppaths.push(["NODE_CONFIG_DIR custom override", NODE_CONFIG_DIR]);
+    }
+    lookuppaths.forEach(lp => {
+        const c = config.util.loadFileConfigs(lp[1]);
+        log(lp[0] + "@" + lp[1] + ": " + JSON.stringify(c, null, 2));
+        config.util.extendDeep(config, c);
+    });
+    log(config);
     return config;
 }
 exports.loadConfig = loadConfig;

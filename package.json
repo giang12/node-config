@@ -4,6 +4,7 @@
   "description": "load configs hiarchy for node services",
   "main": "index.js",
   "scripts": {
+    "make": "npm run clean && npm i && npm run build && npm run test",
     "build": "tsc",
     "clean": "rm *.js *.map",
     "test": "tsc && NODE_ENV=production node ./test.js"

@@ -5,7 +5,7 @@ import { isEqual } from "lodash";
 //
 let test_submod_conf = require("./config/index.js");
 
-let conf = loadConfig();
+let conf = loadConfig(["./config", "./.config", "~/config", "/config"]); //extendDeep([srcs])
 
 console.log("sub module: " + JSON.stringify(test_submod_conf, null, 2));
 console.log("main: " + JSON.stringify(conf, null, 2));

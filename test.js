@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const loadConfig_1 = require("./loadConfig");
 const lodash_1 = require("lodash");
 let test_submod_conf = require("./config/index.js");
-let conf = loadConfig_1.loadConfig();
+let conf = loadConfig_1.loadConfig(["./config", "./.config", "~/config", "/config"]);
 console.log("sub module: " + JSON.stringify(test_submod_conf, null, 2));
 console.log("main: " + JSON.stringify(conf, null, 2));
 let diff = _getObjectDiff(test_submod_conf, conf);

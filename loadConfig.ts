@@ -11,26 +11,30 @@ interface LoadConfOpts {
 
 /**
  * Load Config Hierarchy by extendDeep
- * @param {string}       confDir [custom overide config dir this will have 2nd highest priority, 1 below `NODE_CONFIG_DIR`]
+ * @param {string}       confDirs [custom overide config dirs this will have 2nd highest priority, 1 below `NODE_CONFIG_DIR`]
  * @param {LoadConfOpts} opts    [options]
  */
-export function loadConfig(confDir?: string, opts?: LoadConfOpts) {
+export function loadConfig(confDirs?: any, opts?: LoadConfOpts) {
 	let opt = defaults({}, opts, {
-		verbose: false,
+		verbose: true,
 		strict: false
 	});
 
+	confDirs = Array.isArray(confDirs)
+		? confDirs
+		: typeof confDirs === "string" ? [confDirs] : [];
+	const log = opt.verbose ? console.log : function() {};
 	//relevant dir paths
 	const caller = callerId.getData(loadConfig), //get ref to caller of loadConfig
 		CALLER_DIR = path.dirname(caller.filePath),
 		PROJ_ROOT = pkgDir.sync(CALLER_DIR), //walk up till 1st occurance of package.json
 		CWD = process.cwd(),
-		HOME = process.env.USERPROFILE || process.env.HOME; //of where node is invoked
+		HOME = process.env.USERPROFILE || process.env.HOME, //of where node is invoked
+		ROOT = "/",
+		NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR;
 
-	if (opt.verbose) {
-		console.log(caller);
-		console.log(PROJ_ROOT);
-	}
+	log(caller);
+	log(PROJ_ROOT);
 	//1. read in conf defined @ caller directory as default
 	let config = _loadConfig(CALLER_DIR, opt.strict);
 
@@ -40,32 +44,37 @@ export function loadConfig(confDir?: string, opts?: LoadConfOpts) {
 	let lookuppaths = [
 		["caller config", path.join(CALLER_DIR, "config")], // {callsite}/config
 		["caller .config", path.join(CALLER_DIR, ".config")], // {callsite}/.config
-		["project", PROJ_ROOT], // ./
+		["project", path.resolve(PROJ_ROOT)], // ./
 		["project config", path.join(PROJ_ROOT, "config")], // ./config/
 		["project .config", path.join(PROJ_ROOT, ".config")], // ./.config/
-		["cwd", CWD], // ./
+		["cwd", path.resolve(CWD)], // ./
 		["cwd config", path.join(CWD, "config")], // ./config/
 		["cwd .config", path.join(CWD, ".config")], // ./.config/
 		["home", path.join(HOME, "config")], // /Users/{username}/config/
 		[".home", path.join(HOME, ".config")], // /Users/{username}/.config/
-		["etc", "/etc/config/"] // etc/config
+		["etc", path.resolve("/etc/config/")], // etc/config
+		[".etc", path.resolve("/etc/.config/")], // etc/config
+		["root", path.join(ROOT, "config")], // /config
+		[".root", path.join(ROOT, ".config")] // /.config
 	];
 	/** custom rules */
-	if (confDir) lookuppaths.push(["jiggy custom override", confDir]);
+	confDirs.forEach((dir, idx) => {
+		lookuppaths.push(["jiggy custom override " + idx, dir]);
+	});
 
-	if (process.env.NODE_CONFIG_DIR)
-		lookuppaths.push([
-			"NODE_CONFIG_DIR custom override",
-			process.env.NODE_CONFIG_DIR
-		]);
+	if (NODE_CONFIG_DIR && NODE_CONFIG_DIR != "undefined") {
+		lookuppaths.push(["NODE_CONFIG_DIR custom override", NODE_CONFIG_DIR]);
+	}
 	//	end custom rules
 	//
 	// loop over paths and load them in using extendDeep (replace array)
 	lookuppaths.forEach(lp => {
-		config.util.extendDeep(config, config.util.loadFileConfigs(lp[1]));
+		const c = config.util.loadFileConfigs(lp[1]);
+		log(lp[0] + "@" + lp[1] + ": " + JSON.stringify(c, null, 2));
+		config.util.extendDeep(config, c);
 	});
 
-	if (opt.verbose) console.log(config); //print out everything
+	log(config); //print out everything
 	return config;
 }
 
