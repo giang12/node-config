@@ -5,7 +5,7 @@ const pkgDir = require("pkg-dir");
 const lodash_1 = require("lodash");
 function loadConfig(confDirs, opts) {
     let opt = lodash_1.defaults({}, opts, {
-        verbose: true,
+        verbose: false,
         strict: false
     });
     confDirs = Array.isArray(confDirs)

@@ -5,15 +5,12 @@
   "main": "index.js",
   "scripts": {
     "make": "npm run clean && npm i && npm run build && npm run test",
+    "bump": "npm version patch",
     "build": "tsc",
     "clean": "rm *.js *.map",
     "test": "tsc && NODE_ENV=production node ./test.js"
   },
-  "keywords": [
-    "config",
-    "nodejs",
-    "micro-services"
-  ],
+  "keywords": ["config", "nodejs", "micro-services"],
   "author": {
     "name": "Zen",
     "email": "nggiang12@gmail.com",
@@ -29,9 +26,9 @@
   "homepage": "https://github.com/giang12/node-config#readme",
   "license": "MIT",
   "devDependencies": {
-    "@types/lodash": "^4.14.107",
     "@types/config": "0.0.34",
-    "@types/node": "^9.6.5"
+    "@types/lodash": "^4.14.107",
+    "@types/node": "^9.6.6"
   },
   "dependencies": {
     "caller-id": "^0.1.0",

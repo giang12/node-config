@@ -16,7 +16,7 @@ interface LoadConfOpts {
  */
 export function loadConfig(confDirs?: any, opts?: LoadConfOpts) {
 	let opt = defaults({}, opts, {
-		verbose: true,
+		verbose: false,
 		strict: false
 	});
 
