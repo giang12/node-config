@@ -31,13 +31,13 @@
   "license": "MIT",
   "devDependencies": {
     "@types/config": "0.0.34",
-    "@types/lodash": "^4.14.107",
+    "@types/lodash": "^4.14.108",
     "@types/node": "^9.6.6"
   },
   "dependencies": {
     "caller-id": "^0.1.0",
     "config": "^1.30.0",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.10",
     "pkg-dir": "^2.0.0"
   }
 }

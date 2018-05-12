@@ -4,6 +4,7 @@ const path = require("path"), callerId = require("caller-id");
 const pkgDir = require("pkg-dir");
 const lodash_1 = require("lodash");
 function loadConfig(confDirs, opts) {
+    process.env.ALLOW_CONFIG_MUTATIONS = "y";
     let opt = lodash_1.defaults({}, opts, {
         verbose: false,
         strict: false

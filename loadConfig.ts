@@ -15,6 +15,8 @@ interface LoadConfOpts {
  * @param {LoadConfOpts} opts    [options]
  */
 export function loadConfig(confDirs?: any, opts?: LoadConfOpts) {
+	process.env.ALLOW_CONFIG_MUTATIONS = "y"; //since we self manage the loading logic
+
 	let opt = defaults({}, opts, {
 		verbose: false,
 		strict: false
