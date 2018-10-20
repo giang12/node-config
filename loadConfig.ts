@@ -1,7 +1,7 @@
 const path = require("path"),
 	callerId = require("caller-id");
-const pkgDir = require("pkg-dir");
-
+const pkgDir = require("pkg-dir"),
+	readPkgUp = require("read-pkg-up");
 import { defaults } from "lodash";
 
 interface LoadConfOpts {
@@ -24,12 +24,15 @@ export function loadConfig(confDirs?: any, opts?: LoadConfOpts) {
 
 	confDirs = Array.isArray(confDirs)
 		? confDirs
-		: typeof confDirs === "string" ? [confDirs] : [];
+		: typeof confDirs === "string"
+			? [confDirs]
+			: [];
 	const log = opt.verbose ? console.log : function() {};
 	//relevant dir paths
 	const caller = callerId.getData(loadConfig), //get ref to caller of loadConfig
 		CALLER_DIR = path.dirname(caller.filePath),
 		PROJ_ROOT = pkgDir.sync(CALLER_DIR), //walk up till 1st occurance of package.json
+		PKG = readPkgUp.sync({ cwd: CALLER_DIR }).pkg,
 		CWD = process.cwd(),
 		HOME = process.env.USERPROFILE || process.env.HOME, //of where node is invoked
 		ROOT = "/",
@@ -37,6 +40,7 @@ export function loadConfig(confDirs?: any, opts?: LoadConfOpts) {
 
 	log(caller);
 	log(PROJ_ROOT);
+	log("module name %s", PKG.name);
 	//1. read in conf defined @ caller directory as default
 	let config = _loadConfig(CALLER_DIR, opt.strict);
 
@@ -46,26 +50,54 @@ export function loadConfig(confDirs?: any, opts?: LoadConfOpts) {
 	let lookuppaths = [
 		["caller config", path.join(CALLER_DIR, "config")], // {callsite}/config
 		["caller .config", path.join(CALLER_DIR, ".config")], // {callsite}/.config
+		["caller config mod", path.join(CALLER_DIR, "config", PKG.name)], // {callsite}/config/PKG.name/
+		["caller .config mod", path.join(CALLER_DIR, ".config", PKG.name)], // {callsite}/.config/PKG.name/
+
 		["project", path.resolve(PROJ_ROOT)], // ./
 		["project config", path.join(PROJ_ROOT, "config")], // ./config/
 		["project .config", path.join(PROJ_ROOT, ".config")], // ./.config/
+		["project configmod", path.join(PROJ_ROOT, "config", PKG.name)], // ./config/PKG.name/
+		["project .config mod", path.join(PROJ_ROOT, ".config", PKG.name)], // ./config/PKG.name/
+
 		["cwd", path.resolve(CWD)], // ./
 		["cwd config", path.join(CWD, "config")], // ./config/
 		["cwd .config", path.join(CWD, ".config")], // ./.config/
+		["cwd config mod", path.join(CWD, "config", PKG.name)], // ./config/PKG.name/
+		["cwd .config mod", path.join(CWD, ".config", PKG.name)], // ./.config/PKG.name/
+
 		["home", path.join(HOME, "config")], // /Users/{username}/config/
 		[".home", path.join(HOME, ".config")], // /Users/{username}/.config/
-		["etc", path.resolve("/etc/config/")], // etc/config
-		[".etc", path.resolve("/etc/.config/")], // etc/config
+		["home mod", path.join(HOME, "config", PKG.name)], // /Users/{username}/config/PKG.name/
+		[".home mod", path.join(HOME, ".config", PKG.name)], // /Users/{username}/.config/PKG.name/
+
+		["etc", path.resolve("/etc/config/")], // etc/config/
+		[".etc", path.resolve("/etc/.config/")], // etc/.config/
+		["etc mod", path.resolve(path.join("/etc/config/", PKG.name))], // etc/config/PKG.name/
+		[".etc mod", path.resolve(path.join("/etc/.config/"), PKG.name)], // etc/.config/PKG.name/
+
 		["root", path.join(ROOT, "config")], // /config
-		[".root", path.join(ROOT, ".config")] // /.config
+		[".root", path.join(ROOT, ".config")], // /.config
+		["root mod", path.join(ROOT, "config", PKG.name)], // /config/PKG.name/
+		[".root mod", path.join(ROOT, ".config", PKG.name)] // /.config/PKG.name/
 	];
 	/** custom rules */
 	confDirs.forEach((dir, idx) => {
-		lookuppaths.push(["jiggy custom override " + idx, dir]);
+		lookuppaths.push(["jiggy custom override " + idx, path.resolve(dir)]);
+		lookuppaths.push([
+			"jiggy custom mod override" + idx,
+			path.join(dir, PKG.name)
+		]);
 	});
 
 	if (NODE_CONFIG_DIR && NODE_CONFIG_DIR != "undefined") {
-		lookuppaths.push(["NODE_CONFIG_DIR custom override", NODE_CONFIG_DIR]);
+		lookuppaths.push([
+			"NODE_CONFIG_DIR custom override",
+			path.resolve(NODE_CONFIG_DIR)
+		]);
+		lookuppaths.push([
+			"NODE_CONFIG_DIR custom override",
+			path.join(NODE_CONFIG_DIR, PKG.name)
+		]);
 	}
 	//	end custom rules
 	//

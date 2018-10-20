@@ -1,0 +1,17 @@
+name: "noname"
+
+tracer:
+  type: "jaeger"
+  gateway: "https:/1.2.3.4:14268"
+
+metrics_reporter:
+  type: "prometheus"
+  gateway:  "https:/1.2.3.4:9091"
+
+kafka_cluster: 
+  kafkaHost:
+    - 1.2.3.4:2091
+    - 1.2.3.4:2092
+    - 1.2.3.4:2093
+
+lookup_conf_from_mod_name: true

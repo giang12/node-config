@@ -70,3 +70,11 @@ let lookuppaths = [
 $ export NODE_ENV=production
 $ node ./app/server.js
 ```
+
+## Included parsers:
+
+-   js-yaml@3.12.0
+-   properties@1.2.1
+-   x2js@3.2.1
+-   json5@2.1.0
+-   hjson@3.1.1
