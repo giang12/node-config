@@ -64,6 +64,8 @@ let lookuppaths = [
 ];
 ```
 
+Additionally `loadConfig` caller's `package.name` will be appended after each `lookuppaths`
+
 ## Start your app server:
 
 ```shell
