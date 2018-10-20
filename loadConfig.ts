@@ -72,8 +72,8 @@ export function loadConfig(confDirs?: any, opts?: LoadConfOpts) {
 
 		["etc", path.resolve("/etc/config/")], // etc/config/
 		[".etc", path.resolve("/etc/.config/")], // etc/.config/
-		["etc mod", path.resolve(path.join("/etc/config/", PKG.name))], // etc/config/PKG.name/
-		[".etc mod", path.resolve(path.join("/etc/.config/"), PKG.name)], // etc/.config/PKG.name/
+		["etc mod", path.join("/etc/", "config", PKG.name)], // etc/config/PKG.name/
+		[".etc mod", path.join("/etc/", ".config", PKG.name)], // etc/.config/PKG.name/
 
 		["root", path.join(ROOT, "config")], // /config
 		[".root", path.join(ROOT, ".config")], // /.config
