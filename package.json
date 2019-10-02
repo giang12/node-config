@@ -31,20 +31,20 @@
   "license": "MIT",
   "devDependencies": {
     "@types/config": "0.0.34",
-    "@types/lodash": "^4.14.136",
-    "@types/node": "^12.6.2",
-    "typescript": "^3.5.3"
+    "@types/lodash": "^4.14.141",
+    "@types/node": "^12.7.9",
+    "typescript": "^3.6.3"
   },
   "dependencies": {
     "caller-id": "^0.1.0",
-    "config": "^3.2.0",
+    "config": "^3.2.2",
     "hjson": "^3.1.2",
     "js-yaml": "^3.13.1",
-    "json5": "^2.1.0",
-    "lodash": "^4.17.14",
+    "json5": "^2.1.1",
+    "lodash": "^4.17.15",
     "pkg-dir": "^4.2.0",
     "properties": "^1.2.1",
-    "read-pkg-up": "^6.0.0",
-    "x2js": "^3.3.0"
+    "read-pkg-up": "^7.0.0",
+    "x2js": "^3.3.1"
   }
 }

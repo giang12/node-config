@@ -15,7 +15,7 @@ function loadConfig(confDirs, opts) {
             ? [confDirs]
             : [];
     const log = opt.verbose ? console.log : function () { };
-    const caller = callerId.getData(loadConfig), CALLER_DIR = path.dirname(caller.filePath), PROJ_ROOT = pkgDir.sync(CALLER_DIR), PKG = readPkgUp.sync({ cwd: CALLER_DIR }).package, CWD = process.cwd(), HOME = process.env.USERPROFILE || process.env.HOME, ROOT = "/", NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR;
+    const caller = callerId.getData(loadConfig), CALLER_DIR = path.dirname(caller.filePath), PROJ_ROOT = pkgDir.sync(CALLER_DIR), PKG = readPkgUp.sync({ cwd: CALLER_DIR }).packageJson, CWD = process.cwd(), HOME = process.env.USERPROFILE || process.env.HOME, ROOT = "/", NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR;
     log(caller);
     log(PROJ_ROOT);
     log("module name %s", PKG.name);

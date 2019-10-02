@@ -32,7 +32,7 @@ export function loadConfig(confDirs?: any, opts?: LoadConfOpts) {
 	const caller = callerId.getData(loadConfig), //get ref to caller of loadConfig
 		CALLER_DIR = path.dirname(caller.filePath),
 		PROJ_ROOT = pkgDir.sync(CALLER_DIR), //walk up till 1st occurance of package.json
-		PKG = readPkgUp.sync({ cwd: CALLER_DIR }).package,
+		PKG = readPkgUp.sync({ cwd: CALLER_DIR }).packageJson,
 		CWD = process.cwd(),
 		HOME = process.env.USERPROFILE || process.env.HOME, //of where node is invoked
 		ROOT = "/",
