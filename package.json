@@ -1,6 +1,6 @@
 {
   "name": "my-nconf",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "load configs hiarchy for node services",
   "main": "index.js",
   "scripts": {
